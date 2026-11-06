@@ -1,22 +1,33 @@
-# CampusTrack — Backend con Django REST Framework y JWT
+# CampusTrack — Full Stack (Django REST Framework y React)
 
-Sistema de gestión de perfiles estudiantiles desarrollado con Django REST Framework y autenticación mediante JSON Web Tokens (SimpleJWT).
+Sistema integral de gestión de perfiles estudiantiles desarrollado con **Django REST Framework (Backend)** y **React con Vite (Frontend)**, implementando autenticación segura mediante JSON Web Tokens (SimpleJWT), interfaz de usuario responsiva con Semantic UI, gestión global del estado con Context API y validación rigurosa de formularios.
 
 ---
 
 ## 1. Tecnologías Utilizadas
 
+### Backend
 - **Python:** 3.13.14
 - **Django:** 6.1.3
 - **Django REST Framework:** 3.18.3
-- **drf-yasg:** 1.21.18 (Swagger y ReDoc)
+- **drf-yasg:** 1.21.18 (Swagger UI y ReDoc)
 - **djangorestframework-simplejwt:** 5.5.1
 - **django-cors-headers:** 4.9.0
 - **Base de Datos:** SQLite (`db.sqlite3`)
 
+### Frontend
+- **Node.js & npm:** v22.13.0 / npm 10.9.2
+- **Vite:** 8.3.6
+- **React:** 18.3.1 (JavaScript)
+- **Semantic UI React & CSS:** 2.1.5
+- **Sass:** 1.98.0
+- **React Router DOM:** v6.30.3
+- **Formik & Yup:** Validación de formularios en tiempo real
+- **React Toastify:** Notificaciones dinámicas de éxito y error
+
 ---
 
-## 2. Estructura del Proyecto
+## 2. Estructura General del Proyecto
 
 ```text
 CampusTrack/
@@ -24,25 +35,63 @@ CampusTrack/
 ├── backend/
 │   ├── config/
 │   │   ├── __init__.py
-│   │   ├── settings.py
-│   │   ├── urls.py
+│   │   ├── settings.py          # Configuración DRF, SimpleJWT, CORS, drf-yasg
+│   │   ├── urls.py              # URLs raíz (admin, api/v1, swagger, redoc)
 │   │   ├── asgi.py
 │   │   └── wsgi.py
 │   │
 │   ├── users/
 │   │   ├── migrations/
-│   │   │   └── 0001_initial.py
-│   │   ├── __init__.py
-│   │   ├── admin.py
-│   │   ├── apps.py
-│   │   ├── models.py
-│   │   ├── serializers.py
-│   │   ├── views.py
-│   │   └── urls.py
+│   │   ├── admin.py             # Panel de Django Admin personalizado
+│   │   ├── models.py            # Modelo User con email como USERNAME_FIELD y matricula
+│   │   ├── serializers.py       # Serializers (UserSerializer, UserMeSerializer, RegisterUserSerializer)
+│   │   ├── views.py             # UserApiViewSet, UserView (/auth/me/), RegisterUserView (/auth/register/)
+│   │   └── urls.py              # Rutas de la app users
 │   │
 │   ├── manage.py
 │   ├── requirements.txt
 │   └── run_tests.py
+│
+├── frontend/
+│   ├── src/
+│   │   ├── api/
+│   │   │   ├── token.js         # Gestión de localStorage para JWT
+│   │   │   └── user.js          # peticiones fetch a /auth/token/, /auth/me/ y /auth/register/
+│   │   ├── context/
+│   │   │   └── AuthContext.jsx  # Proveedor de autenticación global (auth, login, logout)
+│   │   ├── hooks/
+│   │   │   ├── useAuth.jsx      # Hook consumidor de AuthContext
+│   │   │   └── useUser.jsx      # Hook para obtener el perfil del usuario
+│   │   ├── layouts/
+│   │   │   ├── AdminLayout.jsx  # Protección de rutas privadas (Dashboard)
+│   │   │   ├── ClientLayout.jsx # Barra de navegación y layout público (Home)
+│   │   │   ├── CommonLayout.jsx # Layout para Login, Register y 404
+│   │   │   └── index.jsx
+│   │   ├── pages/
+│   │   │   ├── admin/
+│   │   │   │   ├── Dashboard.jsx
+│   │   │   │   └── index.jsx
+│   │   │   ├── client/
+│   │   │   │   ├── Home.jsx
+│   │   │   │   └── index.jsx
+│   │   │   └── common/
+│   │   │       ├── Login.jsx
+│   │   │       ├── Register.jsx
+│   │   │       ├── Error404.jsx
+│   │   │       └── index.jsx
+│   │   ├── routes/
+│   │   │   ├── Navigation.jsx   # Enrutador central con React Router DOM v6
+│   │   │   ├── routes.admin.jsx
+│   │   │   ├── routes.client.jsx
+│   │   │   ├── routes.common.jsx
+│   │   │   ├── routes.js
+│   │   │   └── index.jsx
+│   │   ├── App.jsx              # Configuración de ToastContainer y AuthProvider
+│   │   ├── App.scss             # Estilos CampusTrack con Sass
+│   │   └── main.jsx
+│   ├── .env                     # Variables de entorno de conexión
+│   ├── vite.config.js
+│   └── package.json
 │
 ├── .gitignore
 ├── requirements.txt
@@ -51,135 +100,88 @@ CampusTrack/
 
 ---
 
-## 3. Instalación y Puesta en Marcha (Windows PowerShell)
+## 3. Requisitos Previos
 
-### Paso 1: Clonar el repositorio y acceder a la raíz
+- **Python 3.10+** (recomendado Python 3.13)
+- **Node.js 18+** y **npm**
+- **Windows PowerShell** o terminal compatible
+
+---
+
+## 4. Instalación y Puesta en Marcha
+
+### Paso 1: Clonar el repositorio y acceder a la carpeta
 ```powershell
-cd "CampusTrack"
+git clone https://github.com/LuisRamonPerezAlvarez/Backend-con-Django-y-JWT-Local-.git
+cd "Backend-con-Django-y-JWT-Local-"
 ```
 
-### Paso 2: Crear el entorno virtual
+### Paso 2: Configuración del Backend (Django)
 ```powershell
+# Crear y activar entorno virtual
 python -m venv venv
-```
-
-### Paso 3: Activar el entorno virtual
-```powershell
 .\venv\Scripts\Activate.ps1
-```
 
-### Paso 4: Instalar las dependencias
-```powershell
+# Instalar dependencias del backend
 pip install -r requirements.txt
-```
 
-### Paso 5: Aplicar migraciones
-```powershell
+# Aplicar migraciones en la base de datos SQLite
 cd backend
 python manage.py makemigrations
 python manage.py migrate
-```
 
-### Paso 6: Crear el superusuario administrador
-```powershell
-python manage.py createsuperuser
-```
-*(Ingresa correo electrónico, username, matrícula, nombre, apellidos y contraseña cuando se solicite).*
-
-Para generar automáticamente el superusuario de pruebas predeterminado:
-```powershell
+# Crear superusuario administrador (opcional para acceder a /admin y CRUD)
 python -c "import os, django; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings'); django.setup(); from users.models import User; User.objects.create_superuser('admin', 'admin@campustrack.edu', 'AdminPassword123!', matricula='ADMIN001', first_name='Administrador', last_name='General') if not User.objects.filter(email='admin@campustrack.edu').exists() else None"
-```
 
-### Paso 7: Ejecutar el servidor de desarrollo
+# Iniciar servidor backend
+python manage.py runserver 127.0.0.1:8000
+```
+*El backend estará disponible en `http://127.0.0.1:8000/`.*
+
+### Paso 3: Configuración del Frontend (React + Vite)
+En una **nueva ventana de PowerShell**, navega a la carpeta del proyecto y ejecuta:
 ```powershell
-python manage.py runserver
+cd "frontend"
+
+# Instalar dependencias
+cmd /c "npm install"
+
+# Iniciar servidor de desarrollo Vite
+cmd /c "npm run dev"
 ```
-El servidor estará disponible en `http://127.0.0.1:8000/`.
+*El frontend estará disponible en `http://localhost:5173/`.*
 
 ---
 
-## 4. Documentación de la API
+## 5. Variables de Entorno del Frontend (`frontend/.env`)
 
-- **Swagger UI:** [http://127.0.0.1:8000/swagger/](http://127.0.0.1:8000/swagger/)
-- **ReDoc:** [http://127.0.0.1:8000/redoc/](http://127.0.0.1:8000/redoc/)
-- **Django Admin:** [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
+El archivo `.env` en la raíz de `frontend/` contiene:
+```env
+VITE_BASE_API_URL=http://localhost:8000
+VITE_LOCAL_STORAGE_ITEM_NAME=TOKEN
+```
 
 ---
 
-## 5. Endpoints Disponibles
+## 6. Endpoints del Backend
 
-| Método | Endpoint | Permiso requerido | Descripción |
+| Método | Endpoint | Permiso | Descripción |
 |---|---|---|---|
-| `GET` | `/api/v1/users/` | `IsAdminUser` | Listar todos los usuarios |
-| `POST` | `/api/v1/users/` | `IsAdminUser` | Crear un nuevo usuario |
-| `GET` | `/api/v1/users/{id}/` | `IsAdminUser` | Detalle de un usuario |
-| `PUT` | `/api/v1/users/{id}/` | `IsAdminUser` | Actualización completa de un usuario |
-| `PATCH` | `/api/v1/users/{id}/` | `IsAdminUser` | Actualización parcial de un usuario |
-| `DELETE` | `/api/v1/users/{id}/` | `IsAdminUser` | Eliminar un usuario |
-| `GET` | `/api/v1/auth/me/` | `IsAuthenticated` | Consultar perfil del usuario autenticado |
-| `POST` | `/api/v1/auth/token/` | `AllowAny` | Obtener tokens JWT (Login con email + password) |
-| `POST` | `/api/v1/auth/token/refresh/` | `AllowAny` | Renovar el Access Token con Refresh Token |
+| `POST` | `/api/v1/auth/token/` | `AllowAny` | Inicio de sesión con correo y contraseña. Devuelve tokens `access` y `refresh` |
+| `POST` | `/api/v1/auth/token/refresh/` | `AllowAny` | Renovación del access token mediante refresh token |
+| `GET` | `/api/v1/auth/me/` | `IsAuthenticated` | Consulta de perfil del usuario autenticado vía JWT (sin passwords) |
+| `POST` | `/api/v1/auth/register/` | `AllowAny` | Registro público de estudiantes (requiere matrícula obligatoria) |
+| `GET / POST` | `/api/v1/users/` | `IsAdminUser` | CRUD de usuarios (Listar / Crear) |
+| `GET / PUT / PATCH / DELETE` | `/api/v1/users/{id}/` | `IsAdminUser` | CRUD de usuarios (Detalle / Actualización / Eliminación) |
+| `GET` | `/swagger/` | `AllowAny` | Documentación Swagger UI |
+| `GET` | `/redoc/` | `AllowAny` | Documentación ReDoc |
 
 ---
 
-## 6. Autenticación y Flujo de Trabajo
+## 7. Flujo de Autenticación y Navegación
 
-### 1. Iniciar Sesión (Obtener JWT)
-Realizar una petición `POST` a `/api/v1/auth/token/`:
-```json
-{
-  "email": "admin@campustrack.edu",
-  "password": "AdminPassword123!"
-}
-```
-**Respuesta:**
-```json
-{
-  "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
-
-### 2. Consultar Datos Personales (`/api/v1/auth/me/`)
-Incluir la cabecera HTTP:
-```text
-Authorization: Bearer <TU_ACCESS_TOKEN>
-```
-**Respuesta (Garantía de seguridad: sin password ni hash):**
-```json
-{
-  "id": 1,
-  "username": "admin",
-  "email": "admin@campustrack.edu",
-  "first_name": "Administrador",
-  "last_name": "General",
-  "matricula": "ADMIN001",
-  "is_active": true,
-  "is_staff": true
-}
-```
-
----
-
-## 7. Correcciones de Seguridad Implementadas
-
-1. **Protección de Contraseñas:** 
-   - El campo `password` se configuró explícitamente como `write_only=True` en `UserSerializer`.
-   - Se utiliza `UserMeSerializer` en `/api/v1/auth/me/` sin el campo `password`.
-   - Ninguna respuesta serializada retorna el hash ni texto plano de la contraseña.
-2. **Corrección de Vulnerabilidad en Actualización de Usuarios (Manual pág. 10):**
-   - El código original del manual asignaba `request.user.password` al usuario editado cuando no se proporcionaba contraseña, provocando que administradores transfirieran involuntariamente sus hashes de contraseña a otros usuarios.
-   - En este proyecto, la actualización (`update` y `partial_update`) solo altera la contraseña si se envía una nueva en el payload (utilizando `set_password()`). Si no se incluye, la contraseña preexistente del usuario permanece 100% inalterada.
-
----
-
-## 8. Ejecución de la Batería de Pruebas
-
-Para validar el cumplimiento de las 8 pruebas obligatorias:
-```powershell
-cd backend
-..\venv\Scripts\python.exe run_tests.py
-```
-Todas las pruebas (creación, serializers, login JWT, `/auth/me/`, preservación de contraseñas, cambio de contraseñas, permisos admin/user y Swagger) se ejecutan automáticamente.
-
+1. **Registro:** El estudiante accede a `/register`, ingresa sus datos (incluyendo la matrícula obligatoria de CampusTrack) y una contraseña que cumpla con los requisitos mínimos de seguridad. Al crearse, se almacena con hash seguro y se redirige a `/login`.
+2. **Inicio de Sesión:** El estudiante introduce su correo institucional y contraseña en `/login`. El backend valida las credenciales y devuelve el token JWT.
+3. **Persistencia y Estado Global:** El access token se guarda en `localStorage` y `AuthProvider` consulta inmediatamente `/api/v1/auth/me/` para almacenar los datos del estudiante en memoria.
+4. **Dashboard Protegido:** El usuario es redirigido a `/dashboard`, donde se muestra su nombre, correo, matrícula universitaria y estado de cuenta. Si recarga la página (F5), la sesión persiste automáticamente.
+5. **Cierre de Sesión:** Al hacer clic en "Cerrar Sesión", el token se remueve de `localStorage`, el contexto se reinicia y se redirige a `/login`. Cualquier intento de ingresar a `/dashboard` sin autenticación es redirigido a `/login` por `AdminLayout`.
