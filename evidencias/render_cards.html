@@ -1,0 +1,170 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    margin: 0;
+    padding: 30px;
+  }
+  .card {
+    background: #1e293b;
+    border-radius: 12px;
+    border: 1px solid #334155;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.4);
+  }
+  .badge-post {
+    background: #10b981;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 13px;
+  }
+  .badge-get {
+    background: #0284c7;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 13px;
+  }
+  .badge-patch {
+    background: #d97706;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 13px;
+  }
+  .badge-status {
+    background: #059669;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    float: right;
+  }
+  .url {
+    font-family: monospace;
+    font-size: 16px;
+    color: #38bdf8;
+    margin-left: 10px;
+  }
+  pre {
+    background: #090d16;
+    border: 1px solid #1e293b;
+    border-radius: 8px;
+    padding: 16px;
+    color: #a5f3fc;
+    font-size: 13px;
+    overflow-x: auto;
+  }
+  .section-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #f8fafc;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .label {
+    color: #94a3b8;
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 4px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- CARD 1: OBTENCION DEL TOKEN JWT -->
+  <div class="card" id="card-token">
+    <div class="section-title">
+      <div>
+        <span class="badge-post">POST</span>
+        <span class="url">/api/v1/auth/token/</span>
+      </div>
+      <span class="badge-status">Status: 200 OK</span>
+    </div>
+    <div class="label">Request Payload (Credenciales):</div>
+    <pre>{
+  "email": "admin@campustrack.edu",
+  "password": "AdminPassword123!"
+}</pre>
+    <div class="label">Response Payload (Tokens SimpleJWT):</div>
+    <pre>{
+  "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc5NDAxODU1MiwiaWF0IjoxNzkzOTMyMTUyLCJqdGkiOiIwYzhjNmI2ZmQwYjI0NjI5OWE1YTk2N2VmODM2ODg4OCIsInVzZXJfaWQiOiIxIn0.msEKETpwWYMVGAXoqt6xiJ0PQHRQLlom_9tp_K7wDpY",
+  "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzkzOTMzMDUyLCJpYXQiOjE3OTM5MzIxNTIsImp0aSI6IjI0YzU5YzlkMDJiNTQzZTlhNjY5Njc3ZGJjMzQwYmI2IiwidXNlcl9pZCI6IjEifQ.zuJtEu-x_25vjcs6knENTDTRV_IrRno8mZCvJWGucKo"
+}</pre>
+  </div>
+
+  <!-- CARD 2: CONSULTA DE DATOS PERSONALES -->
+  <div class="card" id="card-me">
+    <div class="section-title">
+      <div>
+        <span class="badge-get">GET</span>
+        <span class="url">/api/v1/auth/me/</span>
+      </div>
+      <span class="badge-status">Status: 200 OK</span>
+    </div>
+    <div class="label">Request Headers:</div>
+    <pre>{
+  "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5c..."
+}</pre>
+    <div class="label">Response Body (Datos Personales protegidos, sin password ni hash):</div>
+    <pre>{
+  "id": 1,
+  "username": "admin",
+  "email": "admin@campustrack.edu",
+  "first_name": "Administrador",
+  "last_name": "General",
+  "matricula": "ADMIN001",
+  "is_active": true,
+  "is_staff": true
+}</pre>
+  </div>
+
+  <!-- CARD 3: PRUEBA DE ACTUALIZACION SIN CONTRASEÑA -->
+  <div class="card" id="card-security">
+    <div class="section-title">
+      <div>
+        <span class="badge-patch">PATCH</span>
+        <span class="url">PATCH /api/v1/users/5/</span>
+      </div>
+      <span class="badge-status">Status: 200 OK</span>
+    </div>
+    <div class="label">1. Petición PATCH sin enviar campo 'password':</div>
+    <pre>{
+  "first_name": "Carlos Alberto (Modificado)",
+  "matricula": "DEMO2024-MOD"
+}</pre>
+    
+    <div class="label">2. Respuesta PATCH (Usuario actualizado sin exponer password):</div>
+    <pre>{
+  "id": 5,
+  "username": "evidencia_estudiante",
+  "email": "estudiante.demo@campustrack.edu",
+  "first_name": "Carlos Alberto (Modificado)",
+  "last_name": "Mendoza",
+  "matricula": "DEMO2024-MOD",
+  "is_active": true,
+  "is_staff": false
+}</pre>
+
+    <div class="label">3. Verificación de Autenticación con Contraseña Original tras la actualización:</div>
+    <pre>POST /api/v1/auth/token/ con "PasswordEstudiante123!" -> STATUS 200 OK [ÉXITO: La contraseña original se conservó intacta]
+POST /api/v1/auth/token/ con "PasswordErronea999!" -> STATUS 401 UNAUTHORIZED [ÉXITO: Contraseña inválida rechazada]</pre>
+  </div>
+
+</body>
+</html>
